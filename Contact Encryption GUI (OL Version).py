@@ -1,6 +1,7 @@
 import os
 from Tkinter import *
 import ttk
+from ttk import *
 import hashlib
 #I'm not sure if `import PIL as PilImage` is still necessary?
 import PIL as PilImage
@@ -13,7 +14,7 @@ root.title('Event Encrypted QR Ticket Generator')
 
 #Create the frame to hold everything together
 mainframe = ttk.Frame(root, padding='3 3 12 12')
-mainframe.grid(row=0, column=0, sticky=(N, W, E, S))
+mainframe.grid(row=0, column=0, sticky=(N+W+E+S))
 mainframe.columnconfigure(0, weight=1)
 mainframe.rowconfigure(0, weight=1)
 
@@ -26,17 +27,31 @@ encrypted_data = StringVar()
 #Create some entries for input from the user
 #While we're at it align them to the grid
 first_last_name_entry = ttk.Entry(mainframe, textvariable=first_last_name)
-first_last_name_entry.grid(column=1, row=3, sticky=(W, E))
+first_last_name_entry.grid(column=1, row=3, sticky=(W+E))
 event_name_entry = ttk.Entry(mainframe, textvariable=event_name)
-event_name_entry.grid(column=2, row=3, sticky=(W, E))
+event_name_entry.grid(column=2, row=3, sticky=(W+E))
 admin_password_entry = ttk.Entry(mainframe, textvariable=admin_password, show='*')
-admin_password_entry.grid(column=3, row=3, sticky=(W, E))
-#Create a canvas for displaying the qrcode
-qr_canvas = Canvas(mainframe, bg='white', width=150, height=150)
-qr_canvas.grid(column=2, row=4, sticky=(W, E))
+admin_password_entry.grid(column=3, row=3, sticky=(W+E))
+#Create the startup qr code
+qr_default = qrcode.QRCode (
+    version = 1,
+    error_correction = qrcode.constants.ERROR_CORRECT_L,
+    box_size = 10,
+    border = 2
+)
+qr_default.add_data('https://github.com/NamesJ/qr-tickets')
+qr_default.make(fit=True)
+qr_img_default = qr_default.make_image()
+qr_img_default.save('default.png')
+#Create a label for displaying the qr code
+default_img = Image.open('default.png')
+default_image = ImageTk.PhotoImage(default_img)
+qr_label = Label(mainframe, image=default_image)
+qr_label.image = default_image
+qr_label.grid(column=2, row=4, sticky=(W+E))
 #Here, the default event name is inserted
 #for immediate display and convenience
-event_name_entry.insert(0, 'EVENT NAME')
+event_name_entry.insert(0, 'DEFAULT EVENT NAME')
 
 #Here is our function for encrypting,
 #creating the qr code, and saving the qr code
@@ -50,8 +65,7 @@ def encryptData(*args):
     #after encryption equals.
     #This is a check to ensure that accidents are made when
     #typing your password
-    #I need to have entry for change instead of hard-coding it
-    passTest = 'THE ENCRYPTED VERSION OF YOUR PASSWORD GOES HERE'
+    passTest = 'ENCRYPTED STRING RESULTING FROM PASSWORD'
     #This creates our container to make a qr code
     qr = qrcode.QRCode (
         version = 1,
@@ -70,9 +84,6 @@ def encryptData(*args):
     entered_pass.hexdigest()
     #Add our entered information to an array for convenience
     data = [name, event, admin]
-    #This is for debugging (non-essential these days)
-    print(str(admin))
-    print(str(entered_pass.hexdigest()))
 
     #Create the folder for applicants if it doesn't already exist
     if (os.path.exists('applicants')) == False:
@@ -109,25 +120,26 @@ def encryptData(*args):
         my_file.write('\n\nEncrypted data: ' + encrypted)
         my_file.close()
 
-        #This will display the image on the canvas... after I fix it
+        #This will display the image on the label... after I fix it
         qr_img = Image.open('applicants/' + name + '/' + name + '.png')
         qr_image = ImageTk.PhotoImage(qr_img)
-        qr_canvas.create_image(0, 0, image=qr_image)                            
-        
+        qr_label.configure(image=qr_image)
+        qr_label.image = qr_image
+                
         encrypted_data = encrypted
         #need to del encrypted_data_entry
         encrypted_data_entry.insert(0, encrypted_data)
         
 #This writes everything to the screen
 encrypted_data_entry = ttk.Entry(mainframe, textvariable=encrypted_data)
-encrypted_data_entry.grid(column=1, row=4, sticky=(W, E))
+encrypted_data_entry.grid(column=1, row=4, sticky=(W+E))
 encrypted_data_entry.rowconfigure(0, weight=1)
 ttk.Button(mainframe, text='Encrypt', command=encryptData).grid(column=3, row=4, sticky=W)
 
 #Some labels (I keep accidentally writing lavels)
-ttk.Label(mainframe, text='Name').grid(column=1, row=2, sticky=(W, E))
-ttk.Label(mainframe, text='Event Name').grid(column=4, row=2, sticky=(W, E))
-ttk.Label(mainframe, text='Administrave Password').grid(column=5, row=2, sticky=(W, E))
+ttk.Label(mainframe, text='Name').grid(column=1, row=2, sticky=(W+E))
+ttk.Label(mainframe, text='Event Name').grid(column=4, row=2, sticky=(W+E))
+ttk.Label(mainframe, text='Administrave Password').grid(column=5, row=2, sticky=(W+E))
 
 #This automatically adds some padding to everything
 for child in mainframe.winfo_children(): child.grid_configure(padx=5, pady=5)
