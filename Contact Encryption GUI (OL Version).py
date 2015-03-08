@@ -1,3 +1,10 @@
+"""
+
+Author: Jacob Sanders
+_____________________
+
+"""
+
 import os
 from Tkinter import *
 import ttk
@@ -18,7 +25,7 @@ class SpecFrame(object):
         self.frame.rowconfigure(0, weight=1)
         self.createStrVars()
         self.createLabels()
-        self.createEntrys()
+        self.createEntries()
         self.createButtons()
         self.alignAll()
         self.focusOn()
@@ -30,7 +37,7 @@ class SpecFrame(object):
     def createLabels(self):
         pass
 
-    def createEntrys(self):
+    def createEntries(self):
         pass
 
     def createButtons(self):
@@ -42,9 +49,6 @@ class SpecFrame(object):
     def submitPassword(self):
         pass
 
-    def printPassword(self):
-        pass
-
     def focusOn(self):
         pass
 
@@ -53,6 +57,7 @@ class SpecFrame(object):
 
     def onTop(self):
         self.frame.lift()
+        self.binding()
 
     def onBottom(self):
         self.frame.lower()
@@ -77,7 +82,7 @@ class InitFrame(SpecFrame):
     def createLabels(self):
         self.passwordLabel = ttk.Label(self.frame, text="Password")
 
-    def createEntrys(self):
+    def createEntries(self):
         self.passwordVar_entry = ttk.Entry(self.frame, textvariable=self.passwordVar)
 
     def createButtons(self):
@@ -103,17 +108,145 @@ class InitFrame(SpecFrame):
         my_file = open(my_file_name, 'w')
         my_file.write(self.encryptedPass)
         my_file.close()
+        """
+        doesn't work..
+        mainFrame.onTop()
+        """
         self.onBottom()
-
-    def printPassword(self):
-        print self.passwordVar
 
     def focusOn(self):
         self.passwordVar_entry.focus()
 
     def binding(self):
         self.submit("<Return>", self.submitPassword)
+
+
+class ChangePassFrame(SpecFrame):
+
+    def __init__ (self, name, parent):
+        SpecFrame.__init__(self, name, parent)
+
+    def createStrVars(self):
+        self.oldPasswordVar = StringVar()
+        self.passwordOneVar = StringVar()
+        self.passwordTwoVar = StringVar()
+
+    def createEntries(self):
+        self.oldPasswordVar_entry = ttk.Entry(self.frame, textvariable=self.oldPasswordVar, show="*")
+        self.passwordOneVar_entry = ttk.Entry(self.frame, textvariable=self.passwordOneVar, show="*")
+        self.passwordTwoVar_entry = ttk.Entry(self.frame, textvariable=self.passwordTwoVar, show="*")      
+
+    def createLabels(self):
+        self.validCheckLabel = ttk.Label(self.frame, text="")
+        self.oldPasswordLabel = ttk.Label(self.frame, text="Old Password")
+        self.passwordOneLabel = ttk.Label(self.frame, text="Password")
+        self.passwordTwoLabel = ttk.Label(self.frame, text="Re-enter")
+
+    def createButtons(self):
+        self.submit = ttk.Button(self.frame, text="Submit", command=self.submitPassword)
+
+    def alignAll(self):
+        self.validCheckLabel.grid(column=4, row=2, sticky=(W+E))
         
+        self.oldPasswordLabel.grid(column=1, row=2, sticky=(W+E))
+        self.oldPasswordVar_entry.grid(column=2, row=2, sticky=(W+E))
+        
+        self.passwordOneLabel.grid(column=1, row=3, sticky=(W+E))
+        self.passwordOneVar_entry.grid(column=2, row=3, sticky=(W+E))
+
+        self.passwordTwoLabel.grid(column=1, row=4, sticky=(W+E))
+        self.passwordTwoVar_entry.grid(column=2, row=4, sticky=(W+E))
+        
+        self.submit.grid(column=4, row=4, sticky=(W+E))
+
+    def submitPassword(self):
+        self.passwordTwoVar = self.passwordTwoVar_entry.get()
+        self.encryptPass()
+
+    def encryptPass(self):
+        m = hashlib.md5()
+        m.update(self.passwordTwoVar)
+        self.encryptedPass = m.hexdigest()
+        self.removeOldPass()
+
+    def storePass(self):
+        my_file_name = 'user/pass.txt'
+        my_file = open(my_file_name, 'w')
+        my_file.write(self.encryptedPass)
+        my_file.close()
+        """
+        doesn't work..
+        mainFrame.onTop()
+        """
+        self.onBottom()
+
+    def focusOn(self):
+        self.oldPasswordVar_entry.focus()
+
+    def binding(self):
+        self.submit("<Return>", self.submitPassword)
+
+    def removeOldPass(self):
+        if(os.path.exists('user')):
+            if(os.path.isfile('user/pass.txt')):
+                os.remove('user/pass.txt')
+        self.storePass()
+    
+
+class InitFrame(SpecFrame):
+
+    def __init__ (self, name, parent):
+        SpecFrame.__init__(self, name, parent)
+        self.createDirs()
+
+    def createDirs(self):
+        if (os.path.exists('user')) == False:
+            os.makedirs('user')
+
+    def createStrVars(self):
+        self.passwordVar = StringVar()
+
+    def createLabels(self):
+        self.passwordLabel = ttk.Label(self.frame, text="Password")
+
+    def createEntries(self):
+        self.passwordVar_entry = ttk.Entry(self.frame, textvariable=self.passwordVar, show="*")
+
+    def createButtons(self):
+        self.submit = ttk.Button(self.frame, text="Submit", command=self.submitPassword)
+
+    def alignAll(self):
+        self.passwordLabel.grid(column=2, row=2, sticky=(W+E))
+        self.passwordVar_entry.grid(column=2, row=3, sticky=(W+E))
+        self.submit.grid(column=2, row=4, sticky=(W+E))
+
+    def submitPassword(self):
+        self.passwordVar = self.passwordVar_entry.get()
+        self.encryptPass()
+
+    def encryptPass(self):
+        m = hashlib.md5()
+        m.update(self.passwordVar)
+        self.encryptedPass = m.hexdigest()
+        self.storePass()
+
+    def storePass(self):
+        my_file_name = 'user/pass.txt'
+        my_file = open(my_file_name, 'w')
+        my_file.write(self.encryptedPass)
+        my_file.close()
+        """
+        Doesn't work..
+        mainFrame.onTop()
+        """
+        self.onBottom()
+
+    def focusOn(self):
+        self.passwordVar_entry.focus()
+
+    def binding(self):
+        self.frame.bind("<Return>", self.submitPassword)
+
 
 class MainFrame(SpecFrame):
 
@@ -123,19 +256,22 @@ class MainFrame(SpecFrame):
     def createStrVars(self):
         self.nameVar = StringVar()
         self.eventVar = StringVar()
-        self.passwordVar = StringVar()
         self.dataVar = StringVar()
 
     def createLabels(self):
-        self.nameLabel = ttk.Label(self.frame, text="name")
+        self.nameLabel = ttk.Label(self.frame, text="Name")
         self.eventLabel = ttk.Label(self.frame, text="Event Name")
-        self.passwordLabel = ttk.Label(self.frame, text="Password")
+        #password is now stored in a file
+        #self.passwordLabel = ttk.Label(self.frame, text="Password")
         self.defaultQRCode()
 
-    def createEntrys(self):
+    def createEntries(self):
         self.nameVar_entry = ttk.Entry(self.frame, textvariable=self.nameVar)
         self.eventVar_entry = ttk.Entry(self.frame, textvariable=self.eventVar)
-        self.passwordVar_entry = ttk.Entry(self.frame, textvariable=self.passwordVar)
+        """
+        password is now stored in a file
+        self.passwordVar_entry = ttk.Entry(self.frame, textvariable=self.passwordVar, show="*")
+        """
         self.dataVar_entry = ttk.Entry(self.frame, textvariable=self.dataVar)
 
     def createButtons(self):
@@ -153,8 +289,11 @@ class MainFrame(SpecFrame):
         self.qr_label.grid(column=2, row=4, sticky=(W+E))
         
         #Column 3
+        """
+        password is now stored in a file
         self.passwordLabel.grid(column=3, row=2, sticky=(W+E))
         self.passwordVar_entry.grid(column=3, row=3, sticky=(W+E))
+        """
         self.encrypt.grid(column=3, row=4, sticky=(W+E))
 
     def encryptData(self):
@@ -162,10 +301,18 @@ class MainFrame(SpecFrame):
         #Pull or "get" the data from entry
         name = self.nameVar.get()
         event = self.eventVar.get()
+        """
+        password is instead pulled from a file for convenience
         password = self.passwordVar.get()
+        """
+
+        #read stored password from file
         my_file_name = 'user/pass.txt'
         my_file = open(my_file_name, 'r')
-        passTest = my_file.read()
+
+        #passTest = my_file.read()
+        password = my_file.read()
+
         my_file.close()
         #This creates our container to make a qr code
         qr = qrcode.QRCode (
@@ -175,15 +322,17 @@ class MainFrame(SpecFrame):
             border = 2
         )
 
-        #Create our encryption container
+        #m 
         m = hashlib.md5()
-        #Create our password encryption container (mentioned above)
+        """
+        "entered_pass" is so unecessary now
         entered_pass = hashlib.md5()
-        #Plug-in our password to the container
         entered_pass.update(password)
-        #Digest it (create it)... yum
         entered_pass.hexdigest()
-        #Add our entered information to an array for convenience
+        
+        Add our entered information to an array for convenience
+        password is encryped twice, I may change this
+        """
         data = [name, event, password]
 
         #Create the folder for applicants if it doesn't already exist
@@ -191,7 +340,7 @@ class MainFrame(SpecFrame):
             os.makedirs('applicants')
 
         #Verify that the correct password was entered
-        if (str(entered_pass.hexdigest()) == passTest) or True:
+        if (os.path.isfile('user/pass.txt')):
             if (os.path.exists('applicants/' + name)) == False:
                 os.makedirs('applicants/' + name)
 
@@ -221,26 +370,28 @@ class MainFrame(SpecFrame):
             my_file.write('\n\nEncrypted data: ' + encrypted)
             my_file.close()
 
-            #This will display the image on the label... after I fix it
-            #FIXED IT!
+            #This displays the image to the screen
             qr_img = Image.open('applicants/' + name + '/' + name + '.png')
             qr_image = ImageTk.PhotoImage(qr_img)
             self.qr_label.configure(image=qr_image)
             self.qr_label.image = qr_image
                     
+            """
+            Why was this here?
             encrypted_data = encrypted
+            """
             #need to del encrypted_data_entry
-            self.dataVar_entry.insert(0, encrypted_data)
+            self.dataVar_entry.insert(0, encrypted)
 
 
     def printPassword(self):
         print self.passwordVar
 
     def focusOn(self):
-        self.passwordVar_entry.focus()
+        self.nameVar_entry.focus()
 
     def binding(self):
-        self.encrypt("<Return>", self.submitPassword)
+        self.frame.bind("<Return>", self.encryptData)
 
     def defaultQRCode(self):
         qr_default = qrcode.QRCode (
@@ -255,19 +406,39 @@ class MainFrame(SpecFrame):
         qr_img_default.save('default.png')
         default_img = Image.open('default.png')
         default_image = ImageTk.PhotoImage(default_img)
-        #label gets special self permission
+        #label gets special self permission to be stored
         self.qr_label = Label(self.frame, image=default_image)
         self.qr_label.image = default_image
-
+        #there is no reason to keep this image around
+        os.remove('default.png')
+        
         
 def Main():
         
     root = Tk()
-    root.title('Event Encrypted QR Ticket Generator')
+    root.title('Encrypted QR Ticket Generator')
 
-    mainFrame = MainFrame("Main", root)
+    mainStyle = Style()
+    mainStyle.configure("TFrame", background="#666666")
+    mainStyle.configure("TLabel", background="#666666", foreground="#FFFFFF")
+    mainStyle.configure("TNotebook", background="#666666")
+    mainStyle.configure("TButton", background="#666666", foreground="#FF0066")
+    mainStyle.configure("TEntry", background="#FF0066", foreground="#FF0066")
+    mainStyle.configure("TPanedwindow", background="#FFFFFF")
+
+    noteFrame = SpecFrame("Note", root)
+    mainNoteBook = ttk.Notebook(noteFrame.frame)
+
+    mainFrame = MainFrame("Main", mainNoteBook)
+    changePassFrame = ChangePassFrame("ChangePass", mainNoteBook)
     initFrame = InitFrame("Init", root)
-    initFrame.frame.lift()
+
+    mainNoteBook.add(changePassFrame.frame, text="Change Password", state="normal")
+    mainNoteBook.add(mainFrame.frame, text="Ticket Generator", state="normal")
+
+    mainNoteBook.pack()
+
+    noteFrame.onTop()
 
     root.mainloop()
 
