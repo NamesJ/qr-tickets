@@ -54,6 +54,9 @@ class SpecFrame(object):
     def onTop(self):
         self.frame.lift()
 
+    def onBottom(self):
+        self.frame.lower()
+
     def padding(self):
         for child in self.frame.winfo_children(): child.grid_configure(padx=5, pady=5)
 
@@ -62,6 +65,11 @@ class InitFrame(SpecFrame):
 
     def __init__ (self, name, parent):
         SpecFrame.__init__(self, name, parent)
+        self.createDirs()
+
+    def createDirs(self):
+        if (os.path.exists('user')) == False:
+            os.makedirs('user')
 
     def createStrVars(self):
         self.passwordVar = StringVar()
@@ -82,7 +90,20 @@ class InitFrame(SpecFrame):
 
     def submitPassword(self):
         self.passwordVar = self.passwordVar_entry.get()
-        self.printPassword()
+        self.encryptPass()
+
+    def encryptPass(self):
+        m = hashlib.md5()
+        m.update(self.passwordVar)
+        self.encryptedPass = m.hexdigest()
+        self.storePass()
+
+    def storePass(self):
+        my_file_name = 'user/pass.txt'
+        my_file = open(my_file_name, 'w')
+        my_file.write(self.encryptedPass)
+        my_file.close()
+        self.onBottom()
 
     def printPassword(self):
         print self.passwordVar
@@ -100,19 +121,19 @@ class MainFrame(SpecFrame):
         SpecFrame.__init__(self, name, parent)
 
     def createStrVars(self):
-        self.userVar = StringVar()
+        self.nameVar = StringVar()
         self.eventVar = StringVar()
         self.passwordVar = StringVar()
         self.dataVar = StringVar()
 
     def createLabels(self):
-        self.userLabel = ttk.Label(self.frame, text="User")
+        self.nameLabel = ttk.Label(self.frame, text="name")
         self.eventLabel = ttk.Label(self.frame, text="Event Name")
         self.passwordLabel = ttk.Label(self.frame, text="Password")
         self.defaultQRCode()
 
     def createEntrys(self):
-        self.userVar_entry = ttk.Entry(self.frame, textvariable=self.userVar)
+        self.nameVar_entry = ttk.Entry(self.frame, textvariable=self.nameVar)
         self.eventVar_entry = ttk.Entry(self.frame, textvariable=self.eventVar)
         self.passwordVar_entry = ttk.Entry(self.frame, textvariable=self.passwordVar)
         self.dataVar_entry = ttk.Entry(self.frame, textvariable=self.dataVar)
@@ -122,8 +143,8 @@ class MainFrame(SpecFrame):
 
     def alignAll(self):
         #Column 1
-        self.userLabel.grid(column=1, row=2, sticky=(W+E))
-        self.userVar_entry.grid(column=1, row=3, sticky=(W+E))
+        self.nameLabel.grid(column=1, row=2, sticky=(W+E))
+        self.nameVar_entry.grid(column=1, row=3, sticky=(W+E))
         self.dataVar_entry.grid(column=1, row=4, sticky=(W+E))
         
         #Column 2
@@ -139,14 +160,13 @@ class MainFrame(SpecFrame):
     def encryptData(self):
 
         #Pull or "get" the data from entry
-        user = self.userVar.get()
+        name = self.nameVar.get()
         event = self.eventVar.get()
         password = self.passwordVar.get()
-        #This variable should be set to whatever your password
-        #after encryption equals.
-        #This is a check to ensure that accidents were not made when
-        #typing your password
-        passTest = 'ENCRYPTED STRING RESULTING FROM PASSWORD'
+        my_file_name = 'user/pass.txt'
+        my_file = open(my_file_name, 'r')
+        passTest = my_file.read()
+        my_file.close()
         #This creates our container to make a qr code
         qr = qrcode.QRCode (
             version = 1,
@@ -164,7 +184,7 @@ class MainFrame(SpecFrame):
         #Digest it (create it)... yum
         entered_pass.hexdigest()
         #Add our entered information to an array for convenience
-        data = [user, event, password]
+        data = [name, event, password]
 
         #Create the folder for applicants if it doesn't already exist
         if (os.path.exists('applicants')) == False:
@@ -172,8 +192,8 @@ class MainFrame(SpecFrame):
 
         #Verify that the correct password was entered
         if (str(entered_pass.hexdigest()) == passTest) or True:
-            if (os.path.exists('applicants/' + user)) == False:
-                os.makedirs('applicants/' + user)
+            if (os.path.exists('applicants/' + name)) == False:
+                os.makedirs('applicants/' + name)
 
             #Update contact encryption
             for x in data:
@@ -183,7 +203,7 @@ class MainFrame(SpecFrame):
             encrypted = m.hexdigest()
 
             #Add date to our qr code
-            qr.add_data('Name: ' + user)
+            qr.add_data('Name: ' + name)
             qr.add_data('\r\nEvent name: ' + event)
             qr.add_data('\r\nEncrypted data: ' + encrypted)
             #Fit it properly (The fit is true sounds medieval)
@@ -191,19 +211,19 @@ class MainFrame(SpecFrame):
             #Create a variable for our created qr code
             img = qr.make_image()
             #Save it as a png file
-            img.save('applicants/' + user + '/' + user + '.png')
+            img.save('applicants/' + name + '/' + name + '.png')
 
             #This writes the entered and encrypted information to a txt file
-            my_file_name = 'applicants/' + user + '/' + user + '.txt'
+            my_file_name = 'applicants/' + name + '/' + name + '.txt'
             my_file = open(my_file_name, 'w')
-            my_file.write('Name: ' + user)
+            my_file.write('Name: ' + name)
             my_file.write('\n\nEvent name: ' + event)
             my_file.write('\n\nEncrypted data: ' + encrypted)
             my_file.close()
 
             #This will display the image on the label... after I fix it
             #FIXED IT!
-            qr_img = Image.open('applicants/' + user + '/' + user + '.png')
+            qr_img = Image.open('applicants/' + name + '/' + name + '.png')
             qr_image = ImageTk.PhotoImage(qr_img)
             self.qr_label.configure(image=qr_image)
             self.qr_label.image = qr_image
@@ -245,10 +265,11 @@ def Main():
     root = Tk()
     root.title('Event Encrypted QR Ticket Generator')
 
-    initFrame = InitFrame("Init", root)
     mainFrame = MainFrame("Main", root)
-
+    initFrame = InitFrame("Init", root)
+    initFrame.frame.lift()
 
     root.mainloop()
+
 
 Main()
