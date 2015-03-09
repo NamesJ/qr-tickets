@@ -13,6 +13,5 @@ The information is saved in a text file as well. (This might be changed or usefu
 I originally intended to only keep this for private use. However, I feel that this could be useful to others so I decided to share it.
 
 
-Disclaimer:
-
-This software is free for use. I am not responsible for your use of this software. I only ask that I receive a sliver of credit if you reuse my code. A link to this repository would be greatly appreciated.
+** This software uses GNU General Public License Version 2 **
+** License is included in "License.md" **
