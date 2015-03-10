@@ -51,9 +51,9 @@ class InitFrame(SpecFrame):
         self.submit = ttk.Button(self.frame, text="Submit", command=self.submitPassword)
 
     def alignAll(self):
-        self.password_label.grid(column=2, row=2, sticky=("we"))
-        self.password_entry.grid(column=2, row=3, sticky=("we"))
-        self.submit.grid(column=2, row=4, sticky=("we"))
+        self.password_label.grid(column=2, row=2, sticky=("wens"))
+        self.password_entry.grid(column=2, row=3, sticky=("wens"))
+        self.submit.grid(column=2, row=4, sticky=("wens"))
 
     def submitPassword(self):
         self.password_var = self.password_entry.get()
@@ -61,7 +61,7 @@ class InitFrame(SpecFrame):
 
     def encryptPass(self):
         m = hashlib.md5()
-        m.update(self.passwordVar)
+        m.update(self.password_var)
         self.encryptedPass = m.hexdigest()
         self.storePass()
 

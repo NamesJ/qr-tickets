@@ -23,8 +23,7 @@
 """
 
 #personal classes
-from SpecFrame import SpecFrame, os, shutil, ttk
-from ttk import Label
+from SpecFrame import *
 
 class OptionsFrame(SpecFrame):
     
@@ -42,7 +41,7 @@ class OptionsFrame(SpecFrame):
         pass
 
     def createLabels(self):
-        self.cleanUp_label = Label(self.frame, text="Clear all data!")
+        self.cleanUp_label = ttk.Label(self.frame, text="Clear all data!")
 
     def createEntries(self):
         pass
@@ -51,8 +50,8 @@ class OptionsFrame(SpecFrame):
         self.cleanUp = ttk.Button(self.frame, text="Clear All", command=self.clean)
 
     def alignAll(self):
-        self.cleanUp.grid(column=3, row=3, sticky=("we"))
-        self.cleanUp_label.grid(column=3, row=4, sticky=("we"))
+        self.cleanUp.grid(column=3, row=3, sticky=("wens"))
+        self.cleanUp_label.grid(column=3, row=4, sticky=("wens"))
 
     def submitPassword(self):
         pass

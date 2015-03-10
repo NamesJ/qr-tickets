@@ -50,22 +50,23 @@ class ContextFrame(SpecFrame):
     def createButtons(self):
         self.submit = ttk.Button(self.frame, text="Submit", command=self.submitPassword)
 
-    def createMunus(self):
-        self.event_menu = Menu(self.frame)
+    def createMenus(self):
+        self.event_menu = ttk.Menubutton(self.frame, text="Menu")
 
     def alignAll(self):     
-        self.oldPassword_label.grid(column=1, row=2, sticky=("we"))
-        self.passwordOne_label.grid(column=1, row=3, sticky=("we"))
-        self.passwordTwo_label.grid(column=1, row=4, sticky=("we"))
+        self.event_menu.grid(column=1, row=1, sticky=("wens"))
         
-        self.oldPassword_entry.grid(column=2, row=2, sticky=("we"))
-        self.passwordOne_entry.grid(column=2, row=3, sticky=("we"))
-        self.passwordTwo_entry.grid(column=2, row=4, sticky=("we"))
+        self.oldPassword_label.grid(column=2, row=2, sticky=("wens"))
+        self.passwordOne_label.grid(column=2, row=3, sticky=("wens"))
+        self.passwordTwo_label.grid(column=2, row=4, sticky=("wens"))
         
-        self.changePassword_label.grid(column=2, row=1, sticky=("we"))
+        self.changePassword_label.grid(column=3, row=1, sticky=("wens"))
+        self.oldPassword_entry.grid(column=3, row=2, sticky=("wens"))
+        self.passwordOne_entry.grid(column=3, row=3, sticky=("wens"))
+        self.passwordTwo_entry.grid(column=3, row=4, sticky=("wens"))
         
-        self.validCheck_label.grid(column=4, row=2, sticky=("we"))
-        self.submit.grid(column=4, row=4, sticky=("we"))
+        self.validCheck_label.grid(column=4, row=2, sticky=("wens"))
+        self.submit.grid(column=4, row=4, sticky=("wens"))
 
     def submitPassword(self):
         self.passwordTwo_var = self.passwordTwo_entry.get()

@@ -34,10 +34,8 @@ class SpecFrame(object):
 
     def __init__ (self, name, parent):
         self.name = name
-        self.frame = ttk.Frame(parent, padding='3 3 12 12')
-        self.frame.grid(row=0, column=0, sticky=("nesw"))  # @UndefinedVariable
-        self.frame.columnconfigure(0, weight=1)
-        self.frame.rowconfigure(0, weight=1)
+        self.parent = parent
+        self.setupFrame()
         self.createStrVars()
         self.createLabels()
         self.createEntries()
@@ -46,6 +44,12 @@ class SpecFrame(object):
         self.alignAll()
         self.focusOn()
         self.padding()
+        
+    def setupFrame(self):
+        self.frame = ttk.Frame(self.parent, padding='3 3 12 12')
+        self.frame.grid(row=0, column=0, sticky=("nesw"))  # @UndefinedVariable
+        self.frame.columnconfigure(0, weight=1)
+        self.frame.rowconfigure(0, weight=1)
 
     def createStrVars(self):
         pass

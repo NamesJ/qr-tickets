@@ -23,7 +23,7 @@
 """
 
 #personal classes
-from SpecFrame import ttk
+from SpecFrame import *
 
 class GUIStyle():
     
@@ -32,7 +32,7 @@ class GUIStyle():
         
     def configureAll(self):
         self.mainStyle = ttk.Style()
-        self.mainStyle.configure("TFrame", background="#666666")
+        self.mainStyle.configure("TFrame", background="#666666", foreground="#666666")
         self.mainStyle.configure("TLabel", background="#666666", foreground="#FFFFFF")
         self.mainStyle.configure("TNotebook", background="#666666")
         self.mainStyle.configure("TButton", background="#666666", foreground="#FF0066")

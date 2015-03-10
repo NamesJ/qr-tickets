@@ -24,11 +24,11 @@
 
 #personal classes
 from SpecFrame import Tk
-from MainFrame import MainFrame
+from GeneratorFrame import GeneratorFrame
 from InitFrame import InitFrame
 from ContextFrame import ContextFrame
 from OptionsFrame import OptionsFrame
-from NoteBookFrame import NoteBookFrame
+from NoteBook import NoteBook
 from GUIStyle import GUIStyle
 
         
@@ -45,21 +45,23 @@ def Main():
     root.title('QR Ticket Generator')
     
     mainStyle = GUIStyle()
+    
+    noteBook = NoteBook("notebook", root)
 
-    noteBookFrame = NoteBookFrame("Note", root)
+    mainFrame = GeneratorFrame("Main", noteBook)
+    contextFrame = ContextFrame("ChangePass", noteBook)
+    optionsFrame = OptionsFrame("Options", noteBook)
 
-    mainFrame = MainFrame("Main", noteBookFrame.noteBook)
-    contextFrame = ContextFrame("ChangePass", noteBookFrame.noteBook)
-    optionsFrame = OptionsFrame("Options", noteBookFrame.noteBook)
-
-    noteBookFrame.noteBook.add(mainFrame.frame, text="Ticket Generator", state="normal")
-    noteBookFrame.noteBook.add(contextFrame.frame, text="Context", state="normal")
-    noteBookFrame.noteBook.add(optionsFrame.frame, text="Options", state="normal")
-    noteBookFrame.noteBook.pack()
-
-    noteBookFrame.onTop()
+    noteBook.add(mainFrame.frame, text="Ticket Generator", state="normal")
+    noteBook.add(contextFrame.frame, text="Context", state="normal")
+    noteBook.add(optionsFrame.frame, text="Options", state="normal")
+    noteBook.grid(column=0, row=0, sticky=("nwes"))
     
     initFrame = InitFrame("Init", root)
+    
+    for child in root.children.values():
+        child.columnconfigure=1
+        child.rowconfigure=1
 
     root.mainloop()
 
