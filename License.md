@@ -1,3 +1,9 @@
+Title: QR Ticket Generator
+Description: Creates 'unique' QR images and files used for rapid verification of authenticity. It accomplishes this to the best of (my) ability and given effort.
+Copyright (C) 2015 Jacob Sanders
+
+QR Ticket Generator is distributed under this license:
+
                     GNU GENERAL PUBLIC LICENSE
                        Version 2, June 1991
 
