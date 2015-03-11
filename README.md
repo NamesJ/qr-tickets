@@ -14,3 +14,6 @@ I originally intended to only keep this for private use. However, I feel that th
 
 
 ** This software uses GNU General Public License Version 2 License is included in "License.md" **
+
+
+** If your source was used in this project and was not properly accredited or licensed feel free to contact me and I will make appropriate changes. **
